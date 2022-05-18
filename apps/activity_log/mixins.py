@@ -5,9 +5,8 @@ from django.contrib.contenttypes.models import ContentType
 
 from rest_framework.exceptions import ValidationError
 
-from apps.common.constants import FAILED, SUCCESS
-from apps.log_entry.models import LogAction
-from apps.log_entry.constants import READ, CREATE, UPDATE, DELETE
+from .models import LogAction
+from .constants import READ, CREATE, UPDATE, DELETE, SUCCESS, FAILED
 
 
 class LogActionMixin:

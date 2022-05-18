@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # third party
+    "rest_framework",
     # local apps
     "apps.activity_log",
 ]
@@ -123,3 +125,12 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+"""
+USER_ACTIVITY_LOG = {
+    "TRACK_SUPERUSERS": True,
+    "IGNORE_URLS": [],
+    "TRACK_IGNORE_STATUS_CODES": [],
+    "TRACK_QUERY_STRING": [],
+}
+"""
