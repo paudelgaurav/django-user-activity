@@ -1,3 +1,4 @@
 # django-user-activity
 ## Track user activity including api hits, login, logout etc
-## Work in progress
+
+### In order to track api hit use ActivityLogMixix with class based API views and ViewSets
