@@ -5,34 +5,34 @@ from django.contrib.contenttypes.models import ContentType
 
 from rest_framework.exceptions import ValidationError
 
-from .models import LogAction
+from .models import ActivityLog
 from .constants import READ, CREATE, UPDATE, DELETE, SUCCESS, FAILED
 
 
-class LogActionMixin:
+class ActivityLogMixin:
     """
     Mixin to track user actions
 
-    :cvar custom_log_message:
+    :cvar log_message:
         Log message to populate remarks in LogAction
 
         type --> str
 
         set this value or override get_log_message
 
-        If not set then, default log message is built.
+        If not set then, default log message is generated
     """
 
-    custom_log_message = None
+    log_message = None
 
-    def get_action_type(self, request):
+    def _get_action_type(self, request) -> str:
         return self.action_type_mapper().get(f"{request.method.upper()}")
 
-    def build_log_message(self, request):
-        return f"User: {self._get_user(request)} -- Action Type: {self.get_action_type(request)} Path: {request.resolver_match.url_name}"
+    def _build_log_message(self, request) -> str:
+        return f"User: {self._get_user(request)} -- Action Type: {self._get_action_type(request)} -- Path: {request.path} -- Path Name: {request.resolver_match.url_name}"
 
-    def get_log_message(self, request):
-        return self.custom_log_message or self.build_log_message(request)
+    def get_log_message(self, request) -> str:
+        return self.log_message or self._build_log_message(request)
 
     @staticmethod
     def action_type_mapper():
@@ -48,16 +48,16 @@ class LogActionMixin:
     def _get_user(request):
         return request.user if request.user.is_authenticated else None
 
-    def write_log(self, request, response):
+    def _write_log(self, request, response):
         status = SUCCESS if response.status_code < 400 else FAILED
-        user = self._get_user(request)
+        actor = self._get_user(request)
 
-        if user and not settings.TESTING:
+        if actor and not getattr(settings, "TESTING", False):
             logging.info("Started Log Entry")
 
             data = {
-                "user": user,
-                "action_type": self.get_action_type(request),
+                "actor": actor,
+                "action_type": self._get_action_type(request),
                 "status": status,
                 "remarks": self.get_log_message(request),
             }
@@ -71,10 +71,9 @@ class LogActionMixin:
             except AssertionError:
                 pass
 
-            LogAction.objects.create(**data)
+            ActivityLog.objects.create(**data)
 
     def finalize_response(self, request, *args, **kwargs):
         response = super().finalize_response(request, *args, **kwargs)
-        self.write_log(request, response)
-
+        self._write_log(request, response)
         return response

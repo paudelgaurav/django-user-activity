@@ -8,7 +8,7 @@ from .constants import ACTION_TYPES, ACTION_STATUS, SUCCESS
 User = get_user_model()
 
 
-class LogAction(models.Model):
+class ActivityLog(models.Model):
     actor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     action_type = models.CharField(choices=ACTION_TYPES, max_length=15)
     action_time = models.DateTimeField(auto_now_add=True)
@@ -24,4 +24,4 @@ class LogAction(models.Model):
     content_object = GenericForeignKey()
 
     def __str__(self) -> str:
-        return f"{self.action_type} by {self.user} on {self.action_time}"
+        return f"{self.action_type} by {self.actor} on {self.action_time}"
