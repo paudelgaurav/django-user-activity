@@ -15,3 +15,5 @@ class PostReadOnlyViewSet(ActivityLogMixin, ReadOnlyModelViewSet):
     def get_log_message(self, request) -> str:
         return f"{request.user} is reading blog posts"
 ```
+
+Actual work is done in this [mixin](https://github.com/paudelgaurav/django-user-activity/blob/develop/apps/activity_log/mixins.py).
